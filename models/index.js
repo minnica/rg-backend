@@ -1,11 +1,7 @@
-import paymentTypeModel from './paymentModel.js';
-import dailyPurchasesModel from './dailyPurchasesModel.js';
-import personModel from './personModel.js';
-import categoryModel from './categoryModel.js';
+import Branch from './branch.js';
+import SalesBranch from './branchSales.js';
 
-export {
-  paymentTypeModel,
-  dailyPurchasesModel,
-  personModel,
-  categoryModel
-};
+SalesBranch.belongsTo(Branch, { foreignKey: 'id_branch' });
+Branch.hasMany(SalesBranch, { foreignKey: 'id_branch' });
+
+export { Branch, SalesBranch };

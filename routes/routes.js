@@ -1,11 +1,7 @@
-import express from 'express'
-import { createRecord, deleteRecord, getAllRecords, getRecord, updateRecord } from '../controllers/recordsController.js'
-const router = express.Router()
+import express from 'express';
+import { getAllSalesBranch } from '../controllers/salesBranch.controller.js';
+const router = express.Router();
 
-router.get('/', getAllRecords)
-router.get('/:id', getRecord)
-router.post('/', createRecord)
-router.put('/:id', updateRecord)
-router.delete('/:id', deleteRecord)
+router.get('/', getAllSalesBranch);
 
-export default router
+export default router;
