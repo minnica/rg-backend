@@ -1,6 +1,6 @@
 import { SalesBranch, Branch } from '../models/index.js';
 
-export const getAllSalesBranch = async (req, res) => {
+export const getSalesBranch = async (req, res) => {
   try {
     const salesBranch = await SalesBranch.findAll({
       include: [
