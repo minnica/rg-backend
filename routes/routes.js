@@ -20,6 +20,23 @@ const router = express.Router();
  *               type: array
  *               items:
  *                 type: object
+ *                 properties:
+ *                   id_sales_branch:
+ *                     type: integer
+ *                     example: 38
+ *                   branch_name:
+ *                     type: string
+ *                     example: DELTA
+ *                   date_sales_branch:
+ *                     type: string
+ *                     format: date
+ *                     example: 2025-07-03
+ *                   sales_branch_total:
+ *                     type: string
+ *                     example: "72000"
+ *                   notes:
+ *                     type: string
+ *                     example: ""
  */
 router.get('/sales/branch', getSalesBranch);
 
@@ -39,6 +56,39 @@ router.get('/sales/branch', getSalesBranch);
  *               type: array
  *               items:
  *                 type: object
+ *                 properties:
+ *                   id_employee:
+ *                     type: integer
+ *                     description: ID único del empleado
+ *                     example: 6
+ *                   full_name:
+ *                     type: string
+ *                     description: Nombre completo del empleado
+ *                     example: PAULA GARCIA MENDEZ
+ *                   first_name:
+ *                     type: string
+ *                     description: Primer nombre(s) del empleado
+ *                     example: PAULA
+ *                   last_name:
+ *                     type: string
+ *                     description: Apellido paterno
+ *                     example: GARCIA
+ *                   middle_name:
+ *                     type: string
+ *                     description: Apellido materno
+ *                     example: MENDEZ
+ *                   bank:
+ *                     type: string
+ *                     description: Banco asociado para pagos
+ *                     example: NU
+ *                   account_number:
+ *                     type: string
+ *                     description: Número de cuenta bancaria
+ *                     example: "8493029384756102938"
+ *                   position:
+ *                     type: string
+ *                     description: Puesto del empleado
+ *                     example: VENDEDOR
  */
 router.get('/employees', getEmployees);
 
@@ -58,6 +108,15 @@ router.get('/employees', getEmployees);
  *               type: array
  *               items:
  *                 type: object
+ *                 properties:
+ *                   id_branch:
+ *                     type: integer
+ *                     description: ID único de la sucursal
+ *                     example: 4
+ *                   branch_name:
+ *                     type: string
+ *                     description: Nombre de la sucursal
+ *                     example: GALERIAS INSURGENTES
  */
 router.get('/branches', getBranches);
 
