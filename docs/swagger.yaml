@@ -1,0 +1,165 @@
+openapi: 3.0.0
+info:
+  title: RG Keysar Cosmetics API's
+  version: "1.0.0"
+  description: Documentation for the API REST on Keysar Cosmetics.
+
+servers:
+  - url: "https://keysarcosmetics.fly.dev"
+    description: Servidor de producción
+
+tags:
+  - name: Sales
+    description: It manages sales by branch description.
+  - name: Employees
+    description: It manages employees description.
+  - name: Branch
+    description: It manages branch description.
+
+paths:
+  /keysarCosmetics/sales/branch:
+    get:
+      summary: Obtain detailed information of all sales.
+      description: Returns an array with all sales registered.
+      tags:
+        - Sales
+      responses:
+        "200":
+          description: List of sales by branch
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_sales_branch:
+                      type: integer
+                      example: 38
+                    branch_name:
+                      type: string
+                      example: DELTA
+                    date_sales_branch:
+                      type: string
+                      format: date
+                      example: 2025-07-03
+                    sales_branch_total:
+                      type: string
+                      example: "72000"
+                    notes:
+                      type: string
+                      example: ""
+              example:
+                - id_sales_branch: 38
+                  branch_name: DELTA
+                  date_sales_branch: "2025-07-03"
+                  sales_branch_total: "72000"
+                  notes: ""
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /keysarCosmetics/employees:
+    get:
+      summary: Obtain employees list
+      description: Returns an array with all employees registered.
+      tags:
+        - Employees
+      responses:
+        "200":
+          description: Employees list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_employee:
+                      type: integer
+                      example: 6
+                    full_name:
+                      type: string
+                      example: PAULA GARCIA MENDEZ
+                    first_name:
+                      type: string
+                      example: PAULA
+                    last_name:
+                      type: string
+                      example: GARCIA
+                    middle_name:
+                      type: string
+                      example: MENDEZ
+                    bank:
+                      type: string
+                      example: NU
+                    account_number:
+                      type: string
+                      example: "8493029384756102938"
+                    position:
+                      type: string
+                      example: VENDEDOR
+              example:
+                - id_employee: 6
+                  full_name: PAULA GARCIA MENDEZ
+                  first_name: PAULA
+                  last_name: GARCIA
+                  middle_name: MENDEZ
+                  bank: NU
+                  account_number: "8493029384756102938"
+                  position: VENDEDOR
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error
+
+  /keysarCosmetics/branches:
+    get:
+      summary: Get the list of branches
+      description: Returns an array with the branches registered in the database.
+      tags:
+        - Branch
+      responses:
+        "200":
+          description: List of branches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id_branch:
+                      type: integer
+                      example: 4
+                    branch_name:
+                      type: string
+                      example: GALERIAS INSURGENTES
+              example:
+                - id_branch: 4
+                  branch_name: GALERIAS INSURGENTES
+                - id_branch: 5
+                  branch_name: OPATRA
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Internal server error

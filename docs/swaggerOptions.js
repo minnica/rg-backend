@@ -1,25 +1,6 @@
-import swaggerJSDoc from 'swagger-jsdoc';
+import fs from 'fs';
+import yaml from 'js-yaml';
 
-const swaggerDefinition = {
-  openapi: '3.0.0',
-  info: {
-    title: 'Keysar Cosmetics APIs',
-    version: '1.0.0',
-    description: 'Documentación de mi API REST',
-  },
-  servers: [
-    {
-      url: 'https://keysarcosmetics.fly.dev/',
-      description: 'Servidor de producción',
-    },
-  ],
-};
+const swaggerDocument = yaml.load(fs.readFileSync('./docs/swagger.yaml', 'utf8'));
 
-const options = {
-  swaggerDefinition,
-  apis: ['./routes/*.js'],
-};
-
-const swaggerSpec = swaggerJSDoc(options);
-
-export default swaggerSpec;
+export default swaggerDocument;
