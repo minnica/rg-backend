@@ -6,9 +6,24 @@ import recordsRoutes from './routes/routes.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './docs/swaggerOptions.js';
 
+import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 const app = express();
 
-app.use(cors());
+app.use(cookieParser());
+
+if (process.env.NODE_ENV !== 'production') {
+  app.use(
+    cors({
+      origin: 'http://localhost:5173',
+      credentials: true,
+    }),
+  );
+}
+
 app.use(express.json());
 app.use('/keysarCosmetics', recordsRoutes);
 
