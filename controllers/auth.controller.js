@@ -45,3 +45,25 @@ export const login = async (req, res) => {
     res.status(500).json({ message: 'Error en el servidor' });
   }
 };
+
+export const logout = (req, res) => {
+  res.clearCookie('token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'Strict',
+    path: '/',
+  });
+  res.json({ message: 'Sesión cerrada correctamente' });
+};
+
+export const verifyToken = (req, res) => {
+  const token = req.cookies.token;
+  if (!token) return res.status(401).json({ authenticated: false });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.json({ authenticated: true, user: decoded });
+  } catch (err) {
+    res.status(401).json({ authenticated: false });
+  }
+};
