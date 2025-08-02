@@ -12,6 +12,7 @@ export const getEmployees = async (req, res) => {
         'bank',
         'accountNumber',
         'position',
+        'personalTarget'
       ],
     });
 
@@ -23,7 +24,7 @@ export const getEmployees = async (req, res) => {
 
 export const createEmployee = async (req, res) => {
   try {
-    const { fullName, firstName, lastName, middleName, bank, accountNumber, position } = req.body;
+    const { fullName, firstName, lastName, middleName, bank, accountNumber, position, personalTarget } = req.body;
 
     const newEmployee = await Employee.create({
       fullName,
@@ -33,6 +34,7 @@ export const createEmployee = async (req, res) => {
       bank,
       accountNumber,
       position,
+      personalTarget
     });
 
     res.status(201).json(newEmployee);
