@@ -5,7 +5,7 @@ import {
   createEmployee,
   updateEmployee,
 } from '../controllers/employees.controller.js';
-import { getBranches } from '../controllers/branch.controller.js';
+import { getBranches, createBranch, updateBranch } from '../controllers/branch.controller.js';
 import { getPaymentMethod } from '../controllers/payment-method.controller.js';
 import { login, logout, verifyToken } from '../controllers/auth.controller.js';
 
@@ -16,6 +16,8 @@ router.get('/employees', getEmployees);
 router.post('/employees', createEmployee);
 router.put('/employees/:id', updateEmployee);
 router.get('/branches', getBranches);
+router.post('/branches', createBranch);
+router.put('/branches/:id', updateBranch);
 router.get('/payment-methods', getPaymentMethod);
 router.post('/login', login);
 router.post('/logout', logout);

@@ -4,15 +4,17 @@ import { DataTypes } from 'sequelize';
 const Branch = db.define(
   'Branch',
   {
-    id_branch: {
+    idBranch: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      field: 'id_branch',
     },
-    branch_name: { type: DataTypes.STRING },
+    branchName: { type: DataTypes.STRING, field: 'branch_name' },
   },
   {
     tableName: 'branch',
+    timestamps: false,
   },
 );
 
