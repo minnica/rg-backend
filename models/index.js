@@ -1,5 +1,5 @@
 import Branch from './branch.js';
-import SalesBranch from './salesBranch.js';
+import SalesBranch from './sales-branch.js';
 import Employee from './employees.js';
 import PaymentMethod from './payment-method.js';
 

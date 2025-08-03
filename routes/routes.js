@@ -1,5 +1,5 @@
 import express from 'express';
-import { getSalesBranch } from '../controllers/salesBranch.controller.js';
+import { getSalesBranch } from '../controllers/sales-branch.controller.js';
 import {
   getEmployee,
   createEmployee,
