@@ -6,23 +6,17 @@ export const getSalesBranch = async (req, res) => {
       include: [
         {
           model: Branch,
-          attributes: ['branch_name'],
+          attributes: ['branchName'],
         },
       ],
-      attributes: [
-        'id_sales_branch',
-        'date_sales_branch',
-        'id_branch',
-        'sales_branch_total',
-        'notes',
-      ],
+      attributes: ['idSalesBranch', 'dateSalesBranch', 'idBranch', 'salesBranchTotal', 'notes'],
     });
 
     const data = salesBranch.map(r => ({
-      id_sales_branch: r.id_sales_branch,
-      branch_name: r.Branch?.branch_name,
-      date_sales_branch: r.date_sales_branch,
-      sales_branch_total: r.sales_branch_total,
+      idSalesBranch: r.idSalesBranch,
+      branchName: r.Branch?.branchName,
+      dateSalesBranch: r.dateSalesBranch,
+      salesBranchTotal: r.salesBranchTotal,
       notes: r.notes,
     }));
 

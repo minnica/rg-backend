@@ -2,27 +2,30 @@ openapi: 3.0.0
 info:
   title: RG Keysar Cosmetics API's
   version: "1.0.0"
-  description: Documentation for the API REST on Keysar Cosmetics.
+  description: REST API documentation for Keysar Cosmetics.
 
 servers:
   - url: "https://keysarcosmetics.fly.dev"
-    description: Servidor de producción
+    description: Production Server
 
 tags:
   - name: Sales
-    description: It manages sales by branch description.
+    description: Operations related to sales by branch.
   - name: Employees
-    description: It manages employees description.
+    description: Operations related to employee management.
   - name: Branch
-    description: It manages branch description.
+    description: Operations related to branches.
+  - name: Payment Methods
+    description: Operations related to payment methods.
+  - name: Auth
+    description: Authentication endpoints.
 
 paths:
   /keysarCosmetics/sales/branch:
     get:
-      summary: Obtain detailed information of all sales.
-      description: Returns an array with all sales registered.
-      tags:
-        - Sales
+      summary: Get all sales by branch
+      description: Returns an array with all sales registered by branch, including branch name and details.
+      tags: [Sales]
       responses:
         "200":
           description: List of sales by branch
@@ -31,107 +34,159 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id_sales_branch:
-                      type: integer
-                      example: 38
-                    branch_name:
-                      type: string
-                      example: DELTA
-                    date_sales_branch:
-                      type: string
-                      format: date
-                      example: 2025-07-03
-                    sales_branch_total:
-                      type: string
-                      example: "72000"
-                    notes:
-                      type: string
-                      example: ""
+                  $ref: "#/components/schemas/SalesBranch"
               example:
-                - id_sales_branch: 38
-                  branch_name: DELTA
-                  date_sales_branch: "2025-07-03"
-                  sales_branch_total: "72000"
+                - idSalesBranch: 1
+                  idBranch: 3
+                  branchName: "DELTA"
+                  dateSalesBranch: "2025-07-03"
+                  salesBranchTotal: 72000.00
                   notes: ""
         "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Internal server error
+                $ref: "#/components/schemas/ErrorMessage"
 
   /keysarCosmetics/employees:
     get:
-      summary: Obtain employees list
-      description: Returns an array with all employees registered.
-      tags:
-        - Employees
+      summary: Get all employees
+      description: Returns an array of all registered employees.
+      tags: [Employees]
       responses:
         "200":
-          description: Employees list
+          description: List of employees
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id_employee:
-                      type: integer
-                      example: 6
-                    full_name:
-                      type: string
-                      example: PAULA GARCIA MENDEZ
-                    first_name:
-                      type: string
-                      example: PAULA
-                    last_name:
-                      type: string
-                      example: GARCIA
-                    middle_name:
-                      type: string
-                      example: MENDEZ
-                    bank:
-                      type: string
-                      example: NU
-                    account_number:
-                      type: string
-                      example: "8493029384756102938"
-                    position:
-                      type: string
-                      example: VENDEDOR
+                  $ref: "#/components/schemas/Employee"
               example:
-                - id_employee: 6
-                  full_name: PAULA GARCIA MENDEZ
-                  first_name: PAULA
-                  last_name: GARCIA
-                  middle_name: MENDEZ
-                  bank: NU
-                  account_number: "8493029384756102938"
-                  position: VENDEDOR
+                - idEmployee: 1
+                  fullName: "JUANA PEREZ MAR"
+                  firstName: "JUANA"
+                  lastName: "PEREZ"
+                  middleName: "MAR"
+                  bank: "BBVA"
+                  accountNumber: "0123456789"
+                  position: "Vendedor"
+                  personalTarget: 120000.00
         "500":
           description: Internal server error
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Internal server error
+                $ref: "#/components/schemas/ErrorMessage"
+    post:
+      summary: Create a new employee
+      description: Registers a new employee.
+      tags: [Employees]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeeCreateRequest"
+            example:
+              fullName: "JUANA PEREZ MAR"
+              firstName: "JUANA"
+              lastName: "PEREZ"
+              middleName: "MAR"
+              bank: "BBVA"
+              accountNumber: "0123456789"
+              position: "Vendedor"
+              personalTarget: 120000
+      responses:
+        "201":
+          description: Employee created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+
+  /keysarCosmetics/employees/{id}:
+    put:
+      summary: Update an employee
+      description: Updates an existing employee by ID.
+      tags: [Employees]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Employee ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmployeeUpdateRequest"
+      responses:
+        "200":
+          description: Employee updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Employee"
+        "404":
+          description: Employee not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+    delete:
+      summary: Delete an employee
+      description: Deletes an employee by ID.
+      tags: [Employees]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Employee ID
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Employee deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageOnly"
+              example:
+                message: "Empleado eliminado correctamente"
+        "404":
+          description: Employee not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
 
   /keysarCosmetics/branches:
     get:
-      summary: Get the list of branches
-      description: Returns an array with the branches registered in the database.
-      tags:
-        - Branch
+      summary: Get all branches
+      description: Returns an array of all branches.
+      tags: [Branch]
       responses:
         "200":
           description: List of branches
@@ -140,26 +195,562 @@ paths:
               schema:
                 type: array
                 items:
-                  type: object
-                  properties:
-                    id_branch:
-                      type: integer
-                      example: 4
-                    branch_name:
-                      type: string
-                      example: GALERIAS INSURGENTES
+                  $ref: "#/components/schemas/Branch"
               example:
-                - id_branch: 4
-                  branch_name: GALERIAS INSURGENTES
-                - id_branch: 5
-                  branch_name: OPATRA
+                - idBranch: 4
+                  branchName: "GALERIAS INSURGENTES"
         "500":
           description: Internal server error
           content:
             application/json:
               schema:
+                $ref: "#/components/schemas/ErrorMessage"
+    post:
+      summary: Create a new branch
+      description: Registers a new branch.
+      tags: [Branch]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BranchCreateRequest"
+            example:
+              branchName: "NUEVA SUCURSAL"
+      responses:
+        "201":
+          description: Branch created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Branch"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+
+  /keysarCosmetics/branches/{id}:
+    put:
+      summary: Update a branch
+      description: Updates an existing branch by ID.
+      tags: [Branch]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Branch ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BranchUpdateRequest"
+      responses:
+        "200":
+          description: Branch updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Branch"
+        "404":
+          description: Branch not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+    delete:
+      summary: Delete a branch
+      description: Deletes a branch by ID.
+      tags: [Branch]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Branch ID
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Branch deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageOnly"
+              example:
+                message: "Sucursal eliminada correctamente"
+        "404":
+          description: Branch not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+
+  /keysarCosmetics/payment-methods:
+    get:
+      summary: Get all payment methods
+      description: Returns an array of all payment methods.
+      tags: [Payment Methods]
+      responses:
+        "200":
+          description: List of payment methods
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentMethod"
+              example:
+                - idPaymentMethod: 1
+                  paymentMethodName: "Efectivo"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+    post:
+      summary: Create a new payment method
+      description: Registers a new payment method.
+      tags: [Payment Methods]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentMethodCreateRequest"
+            example:
+              paymentMethodName: "NUEVO MÉTODO"
+      responses:
+        "201":
+          description: Payment method created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentMethod"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+
+  /keysarCosmetics/payment-methods/{id}:
+    put:
+      summary: Update a payment method
+      description: Updates an existing payment method by ID.
+      tags: [Payment Methods]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Payment Method ID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PaymentMethodUpdateRequest"
+      responses:
+        "200":
+          description: Payment method updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaymentMethod"
+        "404":
+          description: Payment method not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+    delete:
+      summary: Delete a payment method
+      description: Deletes a payment method by ID.
+      tags: [Payment Methods]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          description: Payment Method ID
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Payment method deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageOnly"
+              example:
+                message: "Método de pago eliminado correctamente"
+        "404":
+          description: Payment method not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+
+  /keysarCosmetics/login:
+    post:
+      summary: User login
+      description: Authenticates a user and sets a JWT token as an HttpOnly cookie. Responds only with a message.
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  description: Employee email address.
+                  example: user@example.com
+                password:
+                  type: string
+                  format: password
+                  description: Employee password.
+                  example: "supersecret"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageOnly"
+              example:
+                message: "Login exitoso"
+        "400":
+          description: Email or password not provided
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+              example:
+                message: "Email y contraseña son requeridos"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+              example:
+                message: "Credenciales incorrectas"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+              example:
+                message: "Error en el servidor"
+
+  /keysarCosmetics/logout:
+    post:
+      summary: User logout
+      description: Logs out the user by clearing the JWT token cookie.
+      tags: [Auth]
+      responses:
+        "200":
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageOnly"
+              example:
+                message: "Sesión cerrada correctamente"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+
+  /keysarCosmetics/verify-token:
+    get:
+      summary: Verify JWT token
+      description: Verifies the user's JWT token from cookies.
+      tags: [Auth]
+      responses:
+        "200":
+          description: Token is valid and user is authenticated
+          content:
+            application/json:
+              schema:
                 type: object
                 properties:
-                  message:
-                    type: string
-                    example: Internal server error
+                  authenticated:
+                    type: boolean
+                    description: Whether the user is authenticated.
+                    example: true
+                  user:
+                    type: object
+                    description: Decoded user information from the token.
+                    properties:
+                      id:
+                        type: integer
+                        example: 2
+                      name:
+                        type: string
+                        example: "ENRIQUE RAMIREZ"
+                      position:
+                        type: string
+                        example: "ADMIN"
+        "401":
+          description: Invalid or missing token
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authenticated:
+                    type: boolean
+                    example: false
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+
+components:
+  schemas:
+    SalesBranch:
+      type: object
+      properties:
+        idSalesBranch:
+          type: integer
+          description: Sales branch record unique identifier.
+          example: 1
+        idBranch:
+          type: integer
+          description: Branch unique identifier.
+          example: 3
+        branchName:
+          type: string
+          description: Name of the branch.
+          example: "DELTA"
+        dateSalesBranch:
+          type: string
+          format: date
+          description: Sale date.
+          example: "2025-07-03"
+        salesBranchTotal:
+          type: number
+          format: float
+          description: Total sales amount for the branch.
+          example: 72000.00
+        notes:
+          type: string
+          description: Additional notes about the sale.
+          example: ""
+    Employee:
+      type: object
+      properties:
+        idEmployee:
+          type: integer
+          description: Employee unique identifier.
+          example: 1
+        fullName:
+          type: string
+          description: Full name of the employee.
+          example: "JUANA PEREZ MAR"
+        firstName:
+          type: string
+          description: First name(s) of the employee.
+          example: "JUANA"
+        lastName:
+          type: string
+          description: Last name of the employee.
+          example: "PEREZ"
+        middleName:
+          type: string
+          description: Middle name(s) of the employee.
+          example: "MAR"
+        bank:
+          type: string
+          description: Bank associated with the employee.
+          example: "BBVA"
+        accountNumber:
+          type: string
+          description: Employee's bank account number.
+          example: "0123456789"
+        position:
+          type: string
+          description: Position held by the employee.
+          example: "Vendedor"
+        personalTarget:
+          type: number
+          format: float
+          description: Monthly sales target.
+          example: 120000.00
+    EmployeeCreateRequest:
+      type: object
+      required:
+        - fullName
+        - firstName
+        - lastName
+        - bank
+        - accountNumber
+        - position
+        - personalTarget
+      properties:
+        fullName:
+          type: string
+          description: Full name of the employee.
+          example: "JUANA PEREZ MAR"
+        firstName:
+          type: string
+          description: First name(s) of the employee.
+          example: "JUANA"
+        lastName:
+          type: string
+          description: Last name of the employee.
+          example: "PEREZ"
+        middleName:
+          type: string
+          description: Middle name(s) of the employee (optional).
+          example: "MAR"
+        bank:
+          type: string
+          description: Bank associated with the employee.
+          example: "BBVA"
+        accountNumber:
+          type: string
+          description: Employee's bank account number.
+          example: "0123456789"
+        position:
+          type: string
+          description: Position held by the employee.
+          example: "Vendedor"
+        personalTarget:
+          type: number
+          format: float
+          description: Monthly sales target.
+          example: 120000
+    EmployeeUpdateRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+          description: Full name of the employee.
+        firstName:
+          type: string
+          description: First name(s) of the employee.
+        lastName:
+          type: string
+          description: Last name of the employee.
+        middleName:
+          type: string
+          description: Middle name(s) of the employee (optional).
+        bank:
+          type: string
+          description: Bank associated with the employee.
+        accountNumber:
+          type: string
+          description: Employee's bank account number.
+        position:
+          type: string
+          description: Position held by the employee.
+        personalTarget:
+          type: number
+          format: float
+          description: Monthly sales target.
+    Branch:
+      type: object
+      properties:
+        idBranch:
+          type: integer
+          description: Branch unique identifier.
+          example: 4
+        branchName:
+          type: string
+          description: Name of the branch.
+          example: "GALERIAS INSURGENTES"
+    BranchCreateRequest:
+      type: object
+      required:
+        - branchName
+      properties:
+        branchName:
+          type: string
+          description: Name of the new branch.
+          example: "NUEVA SUCURSAL"
+    BranchUpdateRequest:
+      type: object
+      properties:
+        branchName:
+          type: string
+          description: Name of the branch.
+          example: "PLAZA DELTA"
+    PaymentMethod:
+      type: object
+      properties:
+        idPaymentMethod:
+          type: integer
+          description: Payment method unique identifier.
+          example: 1
+        paymentMethodName:
+          type: string
+          description: Name of the payment method.
+          example: "Efectivo"
+    PaymentMethodCreateRequest:
+      type: object
+      required:
+        - paymentMethodName
+      properties:
+        paymentMethodName:
+          type: string
+          description: Name of the payment method.
+          example: "NUEVO MÉTODO"
+    PaymentMethodUpdateRequest:
+      type: object
+      properties:
+        paymentMethodName:
+          type: string
+          description: Name of the payment method.
+    MessageOnly:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Informative message about the operation.
+          example: "Operation completed successfully."
+    ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message.
+          example: "Internal server error"

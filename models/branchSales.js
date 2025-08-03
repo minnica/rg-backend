@@ -4,22 +4,27 @@ import { DataTypes } from 'sequelize';
 const SalesBranch = db.define(
   'SalesBranch',
   {
-    id_sales_branch: {
+    idSalesBranch: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      field: 'id_sales_branch',
     },
-    id_branch: {
+    idBranch: {
       type: DataTypes.INTEGER,
+      field: 'id_branch',
     },
-    branch_name: {
+    branchName: {
       type: DataTypes.STRING,
+      field: 'branch_name',
     },
-    date_sales_branch: {
+    dateSalesBranch: {
       type: DataTypes.DATE,
+      field: 'date_sales_branch',
     },
-    sales_branch_total: {
+    salesBranchTotal: {
       type: DataTypes.DECIMAL,
+      field: 'sales_branch_total',
     },
     notes: {
       type: DataTypes.STRING,
