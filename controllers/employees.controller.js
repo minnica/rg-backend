@@ -1,6 +1,6 @@
 import { Employee } from '../models/index.js';
 
-export const getEmployees = async (req, res) => {
+export const getEmployee = async (req, res) => {
   try {
     const employees = await Employee.findAll({
       attributes: [

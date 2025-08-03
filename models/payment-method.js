@@ -4,12 +4,13 @@ import { DataTypes } from 'sequelize';
 const PaymentMethod = db.define(
   'PaymentMethod',
   {
-    id_payment_method: {
+    idPaymentMethod: {
       type: DataTypes.INTEGER,
       primaryKey: true,
       autoIncrement: true,
+      field: 'id_payment_method',
     },
-    payment_method_name: { type: DataTypes.STRING },
+    paymentMethodName: { type: DataTypes.STRING, field: 'payment_method_name' },
   },
   {
     tableName: 'payment_method',

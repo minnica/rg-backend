@@ -1,6 +1,6 @@
 import { Branch } from '../models/index.js';
 
-export const getBranches = async (req, res) => {
+export const getBranch = async (req, res) => {
   try {
     const branch = await Branch.findAll({
       attributes: ['idBranch', 'branchName'],
