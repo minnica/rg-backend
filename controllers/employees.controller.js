@@ -88,3 +88,21 @@ export const updateEmployee = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const deleteEmployee = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const employee = await Employee.findByPk(id);
+
+    if (!employee) {
+      return res.status(404).json({ message: 'Empleado no encontrado' });
+    }
+
+    await employee.destroy();
+
+    res.json({ message: 'Empleado eliminado correctamente' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

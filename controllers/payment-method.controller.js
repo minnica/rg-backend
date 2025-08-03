@@ -46,3 +46,21 @@ export const updatePaymentMethod = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const deletePaymentMethod = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const paymentMethod = await PaymentMethod.findByPk(id);
+
+    if (!paymentMethod) {
+      return res.status(404).json({ message: 'Método de pago no encontrado' });
+    }
+
+    await paymentMethod.destroy();
+
+    res.json({ message: 'Método de pago eliminado correctamente' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

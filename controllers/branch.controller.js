@@ -45,4 +45,22 @@ export const updateBranch = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-}
+};
+
+export const deleteBranch = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const branch = await Branch.findByPk(id);
+
+    if (!branch) {
+      return res.status(404).json({ message: 'Sucursal no encontrada' });
+    }
+
+    await branch.destroy();
+
+    res.json({ message: 'Sucursal eliminada correctamente' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
