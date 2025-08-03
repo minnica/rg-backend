@@ -1,5 +1,5 @@
 import { Op } from 'sequelize';
-import SalesPayment from '../models/sales-payment.js';
+import SalesPayment from '../models/sales-payment-method.js';
 import Branch from '../models/branch.js';
 import PaymentMethod from '../models/payment-method.js';
 
