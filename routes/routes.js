@@ -21,6 +21,7 @@ import {
 } from '../controllers/payment-method.controller.js';
 
 import { getPaymentMethodReport } from '../controllers/report-payment.controller.js';
+import { getEmployeeReport } from '../controllers/report-employee.controller.js';
 
 const router = express.Router();
 
@@ -46,5 +47,6 @@ router.put('/payment-methods/:id', updatePaymentMethod);
 router.delete('/payment-methods/:id', deletePaymentMethod);
 
 router.get('/reports/payment-methods', getPaymentMethodReport);
+router.get('/reports/employees', getEmployeeReport);
 
 export default router;
