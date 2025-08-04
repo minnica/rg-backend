@@ -2,11 +2,13 @@ import { Op, fn, col, where, literal } from 'sequelize';
 import Branch from '../models/branch.js';
 import SalesBranch from '../models/sales-branch.js';
 
-export const getSalesBranchDailyReport = async (req, res) => {
+export const getSalesBranchReport = async (req, res) => {
   try {
     const { date } = req.query;
     if (!date) {
-      return res.status(400).json({ message: 'date query param is required (YYYY-MM-DD)' });
+      return res
+        .status(400)
+        .json({ message: 'date query param is required (YYYY-MM-DD, YYYY-MM, o YYYY)' });
     }
 
     const branches = await Branch.findAll({
@@ -15,8 +17,20 @@ export const getSalesBranchDailyReport = async (req, res) => {
       raw: true,
     });
 
+    let salesWhere = {};
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      salesWhere = where(fn('DATE', col('date_sales_branch')), date);
+    } else if (/^\d{4}-\d{2}$/.test(date)) {
+      const [year, month] = date.split('-');
+      salesWhere = where(fn('DATE_FORMAT', col('date_sales_branch'), '%Y-%m'), date);
+    } else if (/^\d{4}$/.test(date)) {
+      salesWhere = where(fn('YEAR', col('date_sales_branch')), date);
+    } else {
+      return res.status(400).json({ message: 'date debe ser YYYY-MM-DD, YYYY-MM o YYYY' });
+    }
+
     const sales = await SalesBranch.findAll({
-      where: where(fn('DATE', col('date_sales_branch')), date),
+      where: salesWhere,
       attributes: ['idBranch', [fn('SUM', col('sales_branch_total')), 'sales']],
       group: ['idBranch'],
       raw: true,
