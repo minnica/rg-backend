@@ -29,7 +29,7 @@ import {
   getEmployeeDailyReport,
 } from '../controllers/report-employee.controller.js';
 import { getBranchReport } from '../controllers/report-branch.controller.js';
-import { getSalesBranchReport } from '../controllers/report-sales.controller.js';
+import { getSalesBranchReport, getSalesBranchTotalReport } from '../controllers/report-sales.controller.js';
 
 const router = express.Router();
 
@@ -60,5 +60,6 @@ router.get('/reports/employees', getEmployeeReport);
 router.get('/reports/employees/daily', getEmployeeDailyReport);
 router.get('/reports/branches', getBranchReport);
 router.get('/reports/sales/branch', getSalesBranchReport);
+router.get('/reports/sales/branch/total', getSalesBranchTotalReport);
 
 export default router;
