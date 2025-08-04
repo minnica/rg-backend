@@ -33,6 +33,7 @@ import {
   getSalesBranchReport,
   getSalesBranchTotalReport,
   getSalesBranchChartReport,
+  getSalesEmployeeChartReport
 } from '../controllers/report-sales.controller.js';
 
 const router = express.Router();
@@ -66,5 +67,6 @@ router.get('/reports/branches', getBranchReport);
 router.get('/reports/sales/branch', getSalesBranchReport);
 router.get('/reports/sales/branch/total', getSalesBranchTotalReport);
 router.get('/reports/sales/branch/chart', getSalesBranchChartReport);
+router.get('/reports/sales/employee/chart', getSalesEmployeeChartReport);
 
 export default router;

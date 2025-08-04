@@ -1,6 +1,8 @@
 import { Op, fn, col, where } from 'sequelize';
 import Branch from '../models/branch.js';
 import SalesBranch from '../models/sales-branch.js';
+import SalesEmployees from '../models/sales-employee.js';
+import Employee from '../models/employees.js';
 
 export const getSalesBranchReport = async (req, res) => {
   try {
@@ -105,6 +107,51 @@ export const getSalesBranchChartReport = async (req, res) => {
     const result = branches.map(b => ({
       branch: b.branchName,
       sales: salesMap[b.idBranch] || 0,
+    }));
+
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message, stack: error.stack });
+  }
+};
+
+export const getSalesEmployeeChartReport = async (req, res) => {
+  try {
+    const { month, limit } = req.query;
+
+    if (!month || !/^\d{4}-\d{2}$/.test(month)) {
+      return res.status(400).json({ message: 'El parámetro month es requerido (YYYY-MM)' });
+    }
+
+    const salesWhere = where(fn('DATE_FORMAT', col('date_sales_employees'), '%Y-%m'), month);
+
+    const topSellers = await SalesEmployees.findAll({
+      where: salesWhere,
+      include: [
+        {
+          model: Employee,
+          attributes: ['fullName', 'position'],
+          where: {
+            position: {
+              [Op.in]: ['VENDEDOR', 'GERENTE', 'CERRADOR'],
+            },
+          },
+          required: true,
+        },
+      ],
+      attributes: ['idEmployee', [fn('SUM', col('sale_employees')), 'totalSales']],
+      group: ['idEmployee', 'Employee.id_employee'],
+      order: [[fn('SUM', col('sale_employees')), 'DESC']],
+      limit: limit ? parseInt(limit, 10) : 10,
+      raw: true,
+      nest: true,
+    });
+
+    const result = topSellers.map(seller => ({
+      employee: seller.Employee.fullName,
+      position: seller.Employee.position,
+      sales: Number(seller.totalSales),
     }));
 
     res.json(result);
