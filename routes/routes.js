@@ -20,7 +20,7 @@ import {
   deletePaymentMethod,
 } from '../controllers/payment-method.controller.js';
 
-import { getPaymentMethodReport } from '../controllers/report-payment.controller.js';
+import { getPaymentMethodReport } from '../controllers/report-payment-method.controller.js';
 import { getEmployeeReport } from '../controllers/report-employee.controller.js';
 import { getBranchReport } from '../controllers/report-branch.controller.js';
 
