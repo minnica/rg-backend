@@ -21,6 +21,8 @@ tags:
     description: Authentication endpoints.
   - name: Reports
     description: Operations related to sales and business reports.
+  - name: Dashboard
+    description: Endpoints for dashboard analytics and charts.
 
 paths:
   /keysarCosmetics/sales/branch:
@@ -706,281 +708,154 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessage"
 
-components:
-  schemas:
-    SalesBranch:
-      type: object
-      properties:
-        idSalesBranch:
-          type: integer
-          description: Sales branch record unique identifier.
-          example: 1
-        idBranch:
-          type: integer
-          description: Branch unique identifier.
-          example: 3
-        branchName:
-          type: string
-          description: Name of the branch.
-          example: "DELTA"
-        dateSalesBranch:
-          type: string
-          format: date
-          description: Sale date.
-          example: "2025-07-03"
-        salesBranchTotal:
-          type: number
-          format: float
-          description: Total sales amount for the branch.
-          example: 72000.00
-        notes:
-          type: string
-          description: Additional notes about the sale.
-          example: ""
-    Employee:
-      type: object
-      properties:
-        idEmployee:
-          type: integer
-          description: Employee unique identifier.
-          example: 1
-        fullName:
-          type: string
-          description: Full name of the employee.
-          example: "JUANA PEREZ MAR"
-        firstName:
-          type: string
-          description: First name(s) of the employee.
-          example: "JUANA"
-        lastName:
-          type: string
-          description: Last name of the employee.
-          example: "PEREZ"
-        middleName:
-          type: string
-          description: Middle name(s) of the employee.
-          example: "MAR"
-        bank:
-          type: string
-          description: Bank associated with the employee.
-          example: "BBVA"
-        accountNumber:
-          type: string
-          description: Employee's bank account number.
-          example: "0123456789"
-        position:
-          type: string
-          description: Position held by the employee.
-          example: "Vendedor"
-        personalTarget:
-          type: number
-          format: float
-          description: Monthly sales target.
-          example: 120000.00
-    EmployeeCreateRequest:
-      type: object
-      required:
-        - fullName
-        - firstName
-        - lastName
-        - bank
-        - accountNumber
-        - position
-        - personalTarget
-      properties:
-        fullName:
-          type: string
-          description: Full name of the employee.
-          example: "JUANA PEREZ MAR"
-        firstName:
-          type: string
-          description: First name(s) of the employee.
-          example: "JUANA"
-        lastName:
-          type: string
-          description: Last name of the employee.
-          example: "PEREZ"
-        middleName:
-          type: string
-          description: Middle name(s) of the employee (optional).
-          example: "MAR"
-        bank:
-          type: string
-          description: Bank associated with the employee.
-          example: "BBVA"
-        accountNumber:
-          type: string
-          description: Employee's bank account number.
-          example: "0123456789"
-        position:
-          type: string
-          description: Position held by the employee.
-          example: "Vendedor"
-        personalTarget:
-          type: number
-          format: float
-          description: Monthly sales target.
-          example: 120000
-    EmployeeUpdateRequest:
-      type: object
-      properties:
-        fullName:
-          type: string
-          description: Full name of the employee.
-        firstName:
-          type: string
-          description: First name(s) of the employee.
-        lastName:
-          type: string
-          description: Last name of the employee.
-        middleName:
-          type: string
-          description: Middle name(s) of the employee (optional).
-        bank:
-          type: string
-          description: Bank associated with the employee.
-        accountNumber:
-          type: string
-          description: Employee's bank account number.
-        position:
-          type: string
-          description: Position held by the employee.
-        personalTarget:
-          type: number
-          format: float
-          description: Monthly sales target.
-    Branch:
-      type: object
-      properties:
-        idBranch:
-          type: integer
-          description: Branch unique identifier.
-          example: 4
-        branchName:
-          type: string
-          description: Name of the branch.
-          example: "GALERIAS INSURGENTES"
-    BranchCreateRequest:
-      type: object
-      required:
-        - branchName
-      properties:
-        branchName:
-          type: string
-          description: Name of the new branch.
-          example: "NEW BRANCH"
-    BranchUpdateRequest:
-      type: object
-      properties:
-        branchName:
-          type: string
-          description: Name of the branch.
-          example: "PLAZA DELTA"
-    PaymentMethod:
-      type: object
-      properties:
-        idPaymentMethod:
-          type: integer
-          description: Payment method unique identifier.
-          example: 1
-        paymentMethodName:
-          type: string
-          description: Name of the payment method.
-          example: "Cash"
-    PaymentMethodCreateRequest:
-      type: object
-      required:
-        - paymentMethodName
-      properties:
-        paymentMethodName:
-          type: string
-          description: Name of the payment method.
-          example: "NEW METHOD"
-    PaymentMethodUpdateRequest:
-      type: object
-      properties:
-        paymentMethodName:
-          type: string
-          description: Name of the payment method.
-    MessageOnly:
-      type: object
-      properties:
-        message:
-          type: string
-          description: Informative message about the operation.
-          example: "Operation completed successfully."
-    ErrorMessage:
-      type: object
-      properties:
-        message:
-          type: string
-          description: Error message.
-          example: "Internal server error"
+  /keysarCosmetics/dashboard/sales/branch:
+    get:
+      summary: Get sales by branch (day, month, or year)
+      tags: [Dashboard]
+      parameters:
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+          description: Date filter (YYYY-MM-DD for day, YYYY-MM for month, YYYY for year)
+      responses:
+        "200":
+          description: List of sales per branch
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    branch:
+                      type: string
+                    sales:
+                      type: number
+        "400":
+          description: Invalid or missing date parameter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
 
-    # REPORT SCHEMAS
-    BranchReportRow:
-      type: object
-      description: Report row of sales by branch, with branch names as dynamic keys.
-      properties:
-        DATE:
-          type: string
-          format: date
-          description: Sale date.
-          example: "2025-08-01"
-        TOTAL:
-          type: number
-          format: float
-          description: Total sum of all branches on this date.
-          example: 15000
-      additionalProperties:
-        type: number
-        description: Sales amount by branch (dynamic keys, e.g. "DELTA", "ROMA", etc).
+  /keysarCosmetics/dashboard/sales/branch/total:
+    get:
+      summary: Get total sales (day, month, or year)
+      tags: [Dashboard]
+      parameters:
+        - in: query
+          name: date
+          required: true
+          schema:
+            type: string
+          description: Date filter (YYYY-MM-DD for day, YYYY-MM for month, YYYY for year)
+      responses:
+        "200":
+          description: Total sales for the period
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: number
+        "400":
+          description: Invalid or missing date parameter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
 
-    EmployeeReportRow:
-      type: object
-      description: Report row of sales by employee, with branches as dynamic keys.
-      properties:
-        EMPLOYEE:
-          type: string
-          description: Employee name.
-          example: "JUANA PEREZ"
-        TOTAL:
-          type: number
-          format: float
-          description: Total sales amount for the employee.
-          example: 30000
-        MONTHLY_TARGET:
-          type: number
-          format: float
-          description: Employee's monthly sales target.
-          example: 40000
-        TO_GO:
-          type: number
-          format: float
-          description: Amount left to reach the target.
-          example: 10000
-        PERCENTAGE:
-          type: number
-          format: float
-          description: Percentage of the target achieved.
-          example: 75
-      additionalProperties:
-        type: number
-        description: Sales amount by branch (dynamic keys, e.g. "DELTA", "ROMA", etc).
+  /keysarCosmetics/dashboard/sales/employee/chart:
+    get:
+      summary: Get top sellers by sales (for chart)
+      tags: [Dashboard]
+      parameters:
+        - in: query
+          name: month
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{2}$'
+          description: Month in format YYYY-MM (e.g., 2025-07)
+      responses:
+        "200":
+          description: List of top sellers for the month
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    employee:
+                      type: string
+                    position:
+                      type: string
+                    sales:
+                      type: number
+        "400":
+          description: Missing or invalid month parameter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
 
-    PaymentMethodReportRow:
-      type: object
-      description: Report row of sales by payment method, with methods as dynamic keys.
-      properties:
-        branch:
-          type: string
-          description: Branch name, or 'OVERALL TOTAL' for the totals row.
-          example: "DELTA"
-        TOTAL:
-          type: number
-          format: float
-          description: Total sum of all payment methods for the branch.
-          example: 15000
-      additionalProperties:
-        type: number
-        description: Sales amount by payment method (dynamic keys, e.g. "CASH", "CARD", etc).
+  /keysarCosmetics/dashboard/sales/branch/chart:
+    get:
+      summary: Get monthly sales per branch (for chart)
+      tags: [Dashboard]
+      parameters:
+        - in: query
+          name: month
+          required: true
+          schema:
+            type: string
+            pattern: '^\d{4}-\d{2}$'
+          description: Month in format YYYY-MM (e.g., 2025-07)
+      responses:
+        "200":
+          description: List of monthly totals per branch
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    branch:
+                      type: string
+                    total:
+                      type: number
+        "400":
+          description: Missing or invalid month parameter
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"

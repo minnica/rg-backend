@@ -64,9 +64,9 @@ router.get('/reports/payment-methods/daily', getPaymentMethodDailyReport);
 router.get('/reports/employees', getEmployeeReport);
 router.get('/reports/employees/daily', getEmployeeDailyReport);
 router.get('/reports/branches', getBranchReport);
-router.get('/reports/sales/branch', getSalesBranchReport);
-router.get('/reports/sales/branch/total', getSalesBranchTotalReport);
-router.get('/reports/sales/branch/chart', getSalesBranchChartReport);
-router.get('/reports/sales/employee/chart', getSalesEmployeeChartReport);
+router.get('/dashboard/sales/branch', getSalesBranchReport);
+router.get('/dashboard/sales/branch/total', getSalesBranchTotalReport);
+router.get('/dashboard/sales/branch/chart', getSalesBranchChartReport);
+router.get('/dashboard/sales/employee/chart', getSalesEmployeeChartReport);
 
 export default router;
