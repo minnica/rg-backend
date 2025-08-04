@@ -20,7 +20,10 @@ import {
   deletePaymentMethod,
 } from '../controllers/payment-method.controller.js';
 
-import { getPaymentMethodReport } from '../controllers/report-payment-method.controller.js';
+import {
+  getPaymentMethodReport,
+  getPaymentMethodDailyReport,
+} from '../controllers/report-payment-method.controller.js';
 import { getEmployeeReport } from '../controllers/report-employee.controller.js';
 import { getBranchReport } from '../controllers/report-branch.controller.js';
 
@@ -48,6 +51,7 @@ router.put('/payment-methods/:id', updatePaymentMethod);
 router.delete('/payment-methods/:id', deletePaymentMethod);
 
 router.get('/reports/payment-methods', getPaymentMethodReport);
+router.get('/reports/payment-methods/daily', getPaymentMethodDailyReport);
 router.get('/reports/employees', getEmployeeReport);
 router.get('/reports/branches', getBranchReport);
 
