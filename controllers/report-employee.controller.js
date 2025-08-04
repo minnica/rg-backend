@@ -1,4 +1,4 @@
-import { Op } from 'sequelize';
+import { Op, fn, col } from 'sequelize';
 import Employee from '../models/employees.js';
 import Branch from '../models/branch.js';
 import SalesEmployee from '../models/sales-employee.js';
@@ -93,6 +93,76 @@ export const getEmployeeReport = async (req, res) => {
     }
 
     result.sort((a, b) => b.TOTAL - a.TOTAL);
+
+    res.json(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: error.message, stack: error.stack });
+  }
+};
+
+export const getEmployeeDailyReport = async (req, res) => {
+  try {
+    const { year, month } = req.query;
+
+    if (!year || !month) {
+      return res.status(400).json({ message: 'year and month are required.' });
+    }
+
+    const monthStr = String(month).padStart(2, '0');
+    const startOfMonth = `${year}-${monthStr}-01`;
+    const endOfMonthDate = new Date(year, month, 0); // Last day of month
+    const endOfMonth = endOfMonthDate.toISOString().slice(0, 10);
+
+    const daysInMonth = endOfMonthDate.getDate();
+    const dayColumns = [];
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dayStr = String(d).padStart(2, '0');
+      dayColumns.push(dayStr);
+    }
+
+    const employees = await Employee.findAll({
+      where: {
+        position: {
+          [Op.in]: ['VENDEDOR', 'GERENTE', 'CERRADOR'],
+        },
+      },
+      attributes: ['idEmployee', 'fullName'],
+      order: [['fullName', 'ASC']],
+      raw: true,
+    });
+
+    const sales = await SalesEmployee.findAll({
+      where: {
+        dateSalesEmployee: {
+          [Op.between]: [startOfMonth, endOfMonth],
+        },
+      },
+      attributes: [
+        'idEmployee',
+        [fn('DATE', col('date_sales_employees')), 'saleDate'],
+        [fn('SUM', col('sale_employees')), 'salesSum'],
+      ],
+      group: ['idEmployee', fn('DATE', col('date_sales_employees'))],
+      raw: true,
+    });
+
+    const result = [];
+    for (const emp of employees) {
+      const row = { EMPLOYEE: emp.fullName };
+      let total = 0;
+      for (const dayStr of dayColumns) {
+        const date = `${year}-${monthStr}-${dayStr}`;
+        const sale = sales.find(
+          s => s.idEmployee === emp.idEmployee && s.saleDate.startsWith(date),
+        );
+        const value = sale ? parseFloat(sale.salesSum) : 0;
+        row[`${dayStr}/${monthStr.slice(-2)}/${year.toString().slice(-2)}`] = value;
+        total += value;
+      }
+      row.TOTAL = total;
+      result.push(row);
+    }
 
     res.json(result);
   } catch (error) {
