@@ -1,6 +1,6 @@
 openapi: 3.0.0
 info:
-  title: RG Keysar Cosmetics API's
+  title: Feature Sales Management CRUD API's
   version: "1.0.0"
   description: REST API documentation for Keysar Cosmetics.
 
@@ -19,6 +19,8 @@ tags:
     description: Operations related to payment methods.
   - name: Auth
     description: Authentication endpoints.
+  - name: Reports
+    description: Operations related to sales and business reports.
 
 paths:
   /keysarCosmetics/sales/branch:
@@ -168,7 +170,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/MessageOnly"
               example:
-                message: "Empleado eliminado correctamente"
+                message: "Employee deleted successfully"
         "404":
           description: Employee not found
           content:
@@ -216,7 +218,7 @@ paths:
             schema:
               $ref: "#/components/schemas/BranchCreateRequest"
             example:
-              branchName: "NUEVA SUCURSAL"
+              branchName: "NEW BRANCH"
       responses:
         "201":
           description: Branch created successfully
@@ -287,7 +289,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/MessageOnly"
               example:
-                message: "Sucursal eliminada correctamente"
+                message: "Branch deleted successfully"
         "404":
           description: Branch not found
           content:
@@ -317,7 +319,7 @@ paths:
                   $ref: "#/components/schemas/PaymentMethod"
               example:
                 - idPaymentMethod: 1
-                  paymentMethodName: "Efectivo"
+                  paymentMethodName: "Cash"
         "500":
           description: Internal server error
           content:
@@ -335,7 +337,7 @@ paths:
             schema:
               $ref: "#/components/schemas/PaymentMethodCreateRequest"
             example:
-              paymentMethodName: "NUEVO MÉTODO"
+              paymentMethodName: "NEW METHOD"
       responses:
         "201":
           description: Payment method created successfully
@@ -406,7 +408,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/MessageOnly"
               example:
-                message: "Método de pago eliminado correctamente"
+                message: "Payment method deleted successfully"
         "404":
           description: Payment method not found
           content:
@@ -450,7 +452,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/MessageOnly"
               example:
-                message: "Login exitoso"
+                message: "Login successful"
         "400":
           description: Email or password not provided
           content:
@@ -458,7 +460,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessage"
               example:
-                message: "Email y contraseña son requeridos"
+                message: "Email and password are required"
         "401":
           description: Invalid credentials
           content:
@@ -466,7 +468,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessage"
               example:
-                message: "Credenciales incorrectas"
+                message: "Invalid credentials"
         "500":
           description: Internal server error
           content:
@@ -474,7 +476,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorMessage"
               example:
-                message: "Error en el servidor"
+                message: "Internal server error"
 
   /keysarCosmetics/logout:
     post:
@@ -489,7 +491,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/MessageOnly"
               example:
-                message: "Sesión cerrada correctamente"
+                message: "Logout successful"
         "500":
           description: Internal server error
           content:
@@ -537,6 +539,166 @@ paths:
                   authenticated:
                     type: boolean
                     example: false
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+
+  # --------------------
+  # REPORT ENDPOINTS - Reports tag only!
+  # --------------------
+  /keysarCosmetics/reports/branches:
+    get:
+      summary: Get sales report by branch
+      description: |
+        Returns an array with the total sales registered by branch, grouped by date, within a given date range.
+      tags: [Reports]
+      parameters:
+        - in: query
+          name: startDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Start date of the range (YYYY-MM-DD)
+        - in: query
+          name: endDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: End date of the range (YYYY-MM-DD)
+      responses:
+        "200":
+          description: List of sales grouped by branch and date
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BranchReportRow"
+              example:
+                - DATE: "2025-08-01"
+                  DELTA: 10000
+                  ROMA: 5000
+                  TOTAL: 15000
+        "400":
+          description: Missing required dates
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+              example:
+                message: "Both startDate and endDate are required."
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+
+  /keysarCosmetics/reports/employees:
+    get:
+      summary: Get sales report by employee
+      description: |
+        Returns a report with total sales per employee and branch, the monthly target, total sales, amount remaining to reach the target, and achieved percentage, within a given date range.
+      tags: [Reports]
+      parameters:
+        - in: query
+          name: startDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Start date of the range (YYYY-MM-DD)
+        - in: query
+          name: endDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: End date of the range (YYYY-MM-DD)
+      responses:
+        "200":
+          description: List of sales grouped by employee and branch
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EmployeeReportRow"
+              example:
+                - EMPLOYEE: "JUANA PEREZ"
+                  DELTA: 10000
+                  ROMA: 20000
+                  TOTAL: 30000
+                  MONTHLY_TARGET: 40000
+                  TO_GO: 10000
+                  PERCENTAGE: 75
+        "400":
+          description: Missing required dates
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+              example:
+                message: "Both startDate and endDate are required."
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+
+  /keysarCosmetics/reports/payment-methods:
+    get:
+      summary: Get sales report by payment method
+      description: |
+        Returns a report of sales grouped by branch and payment method, including overall totals, within a given date range.
+      tags: [Reports]
+      parameters:
+        - in: query
+          name: startDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: Start date of the range (YYYY-MM-DD)
+        - in: query
+          name: endDate
+          required: true
+          schema:
+            type: string
+            format: date
+          description: End date of the range (YYYY-MM-DD)
+      responses:
+        "200":
+          description: List of sales grouped by payment method and branch
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PaymentMethodReportRow"
+              example:
+                - branch: "DELTA"
+                  CASH: 12000
+                  CARD: 3000
+                  TOTAL: 15000
+                - branch: "OVERALL TOTAL"
+                  CASH: 32000
+                  CARD: 7000
+                  TOTAL: 39000
+        "400":
+          description: Missing required dates
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorMessage"
+              example:
+                message: "Both startDate and endDate are required."
         "500":
           description: Internal server error
           content:
@@ -706,7 +868,7 @@ components:
         branchName:
           type: string
           description: Name of the new branch.
-          example: "NUEVA SUCURSAL"
+          example: "NEW BRANCH"
     BranchUpdateRequest:
       type: object
       properties:
@@ -724,7 +886,7 @@ components:
         paymentMethodName:
           type: string
           description: Name of the payment method.
-          example: "Efectivo"
+          example: "Cash"
     PaymentMethodCreateRequest:
       type: object
       required:
@@ -733,7 +895,7 @@ components:
         paymentMethodName:
           type: string
           description: Name of the payment method.
-          example: "NUEVO MÉTODO"
+          example: "NEW METHOD"
     PaymentMethodUpdateRequest:
       type: object
       properties:
@@ -754,3 +916,71 @@ components:
           type: string
           description: Error message.
           example: "Internal server error"
+
+    # REPORT SCHEMAS
+    BranchReportRow:
+      type: object
+      description: Report row of sales by branch, with branch names as dynamic keys.
+      properties:
+        DATE:
+          type: string
+          format: date
+          description: Sale date.
+          example: "2025-08-01"
+        TOTAL:
+          type: number
+          format: float
+          description: Total sum of all branches on this date.
+          example: 15000
+      additionalProperties:
+        type: number
+        description: Sales amount by branch (dynamic keys, e.g. "DELTA", "ROMA", etc).
+
+    EmployeeReportRow:
+      type: object
+      description: Report row of sales by employee, with branches as dynamic keys.
+      properties:
+        EMPLOYEE:
+          type: string
+          description: Employee name.
+          example: "JUANA PEREZ"
+        TOTAL:
+          type: number
+          format: float
+          description: Total sales amount for the employee.
+          example: 30000
+        MONTHLY_TARGET:
+          type: number
+          format: float
+          description: Employee's monthly sales target.
+          example: 40000
+        TO_GO:
+          type: number
+          format: float
+          description: Amount left to reach the target.
+          example: 10000
+        PERCENTAGE:
+          type: number
+          format: float
+          description: Percentage of the target achieved.
+          example: 75
+      additionalProperties:
+        type: number
+        description: Sales amount by branch (dynamic keys, e.g. "DELTA", "ROMA", etc).
+
+    PaymentMethodReportRow:
+      type: object
+      description: Report row of sales by payment method, with methods as dynamic keys.
+      properties:
+        branch:
+          type: string
+          description: Branch name, or 'OVERALL TOTAL' for the totals row.
+          example: "DELTA"
+        TOTAL:
+          type: number
+          format: float
+          description: Total sum of all payment methods for the branch.
+          example: 15000
+      additionalProperties:
+        type: number
+        description: Sales amount by payment method (dynamic keys, e.g. "CASH", "CARD", etc).
