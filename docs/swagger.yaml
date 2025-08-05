@@ -859,3 +859,166 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorMessage"
+
+components:
+  schemas:
+    SalesBranch:
+      type: object
+      properties:
+        idSalesBranch:
+          type: integer
+          example: 1
+        idBranch:
+          type: integer
+          example: 3
+        branchName:
+          type: string
+          example: "DELTA"
+        dateSalesBranch:
+          type: string
+          format: date
+          example: "2025-07-03"
+        salesBranchTotal:
+          type: number
+          format: float
+          example: 72000.00
+        notes:
+          type: string
+          nullable: true
+          example: ""
+    Employee:
+      type: object
+      properties:
+        idEmployee:
+          type: integer
+        fullName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+          nullable: true
+        bank:
+          type: string
+          nullable: true
+        accountNumber:
+          type: string
+          nullable: true
+        position:
+          type: string
+        personalTarget:
+          type: number
+          format: float
+          nullable: true
+      required:
+        - idEmployee
+        - fullName
+        - firstName
+        - lastName
+        - position
+    Branch:
+      type: object
+      properties:
+        idBranch:
+          type: integer
+        branchName:
+          type: string
+    PaymentMethod:
+      type: object
+      properties:
+        idPaymentMethod:
+          type: integer
+        paymentMethodName:
+          type: string
+
+    EmployeeCreateRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+          nullable: true
+        bank:
+          type: string
+        accountNumber:
+          type: string
+        position:
+          type: string
+        personalTarget:
+          type: number
+          format: float
+      required: [fullName, firstName, lastName, position]
+    EmployeeUpdateRequest:
+      allOf:
+        - $ref: "#/components/schemas/EmployeeCreateRequest"
+
+    BranchCreateRequest:
+      type: object
+      properties:
+        branchName:
+          type: string
+      required: [branchName]
+    BranchUpdateRequest:
+      allOf:
+        - $ref: "#/components/schemas/BranchCreateRequest"
+
+    PaymentMethodCreateRequest:
+      type: object
+      properties:
+        paymentMethodName:
+          type: string
+      required: [paymentMethodName]
+    PaymentMethodUpdateRequest:
+      allOf:
+        - $ref: "#/components/schemas/PaymentMethodCreateRequest"
+
+    MessageOnly:
+      type: object
+      properties:
+        message:
+          type: string
+
+    ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
+        stack:
+          type: string
+          nullable: true
+
+    BranchReportRow:
+      type: object
+      properties:
+        DATE:
+          type: string
+          format: date
+        TOTAL:
+          type: number
+    EmployeeReportRow:
+      type: object
+      properties:
+        EMPLOYEE:
+          type: string
+        TOTAL:
+          type: number
+        MONTHLY_TARGET:
+          type: number
+        TO_GO:
+          type: number
+        PERCENTAGE:
+          type: number
+    PaymentMethodReportRow:
+      type: object
+      properties:
+        branch:
+          type: string
+        TOTAL:
+          type: number
