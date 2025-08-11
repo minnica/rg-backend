@@ -3,6 +3,7 @@ import { login, logout, verifyToken } from '../controllers/auth.controller.js';
 import { getSalesBranch } from '../controllers/sales.controller.js';
 import {
   getEmployee,
+  getEmployeesSellers,
   createEmployee,
   updateEmployee,
   deleteEmployee,
@@ -33,7 +34,7 @@ import {
   getSalesBranchReport,
   getSalesBranchTotalReport,
   getSalesBranchChartReport,
-  getSalesEmployeeChartReport
+  getSalesEmployeeChartReport,
 } from '../controllers/report-sales.controller.js';
 
 const router = express.Router();
@@ -45,6 +46,7 @@ router.get('/verify-token', verifyToken);
 router.get('/sales/branch', getSalesBranch);
 
 router.get('/employees', getEmployee);
+router.get('/employees/sellers', getEmployeesSellers);
 router.post('/employees', createEmployee);
 router.put('/employees/:id', updateEmployee);
 router.delete('/employees/:id', deleteEmployee);
