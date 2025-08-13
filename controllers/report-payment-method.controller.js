@@ -2,6 +2,7 @@ import { Op, fn, col, where } from 'sequelize';
 import SalesPayment from '../models/sales-payment-method.js';
 import Branch from '../models/branch.js';
 import PaymentMethod from '../models/payment-method.js';
+import { addTotalsRow } from '../utils/addTotalsRow.js';
 
 export const getPaymentMethodReport = async (req, res) => {
   try {
@@ -139,7 +140,11 @@ export const getPaymentMethodDailyReport = async (req, res) => {
       result.push(row);
     }
 
-    res.json(result);
+    const withTotal = addTotalsRow(result, {
+      labelKey: 'DATE',
+      excludeKeys: ['DATE'],
+    });
+    res.json(withTotal);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error.' });

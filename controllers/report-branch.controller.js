@@ -1,6 +1,7 @@
 import { Op } from 'sequelize';
 import SalesBranch from '../models/sales-branch.js';
 import Branch from '../models/branch.js';
+import { addTotalsRow } from '../utils/addTotalsRow.js';
 
 export const getBranchReport = async (req, res) => {
   try {
@@ -52,7 +53,11 @@ export const getBranchReport = async (req, res) => {
 
     const filteredResult = result.filter(r => r.DATE);
 
-    res.json(filteredResult);
+    const withTotal = addTotalsRow(filteredResult, {
+      labelKey: 'DATE',
+      excludeKeys: ['DATE'],
+    });
+    res.json(withTotal);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message, stack: error.stack });

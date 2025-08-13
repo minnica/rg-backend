@@ -2,6 +2,7 @@ import { Op, fn, col } from 'sequelize';
 import Employee from '../models/employees.js';
 import Branch from '../models/branch.js';
 import SalesEmployee from '../models/sales-employee.js';
+import { addTotalsRow } from '../utils/addTotalsRow.js';
 
 export const getEmployeeReport = async (req, res) => {
   try {
@@ -94,7 +95,11 @@ export const getEmployeeReport = async (req, res) => {
 
     result.sort((a, b) => b.TOTAL - a.TOTAL);
 
-    res.json(result);
+    const withTotal = addTotalsRow(result, {
+      labelKey: 'EMPLOYEE',
+      excludeKeys: ['EMPLOYEE', 'PERCENTAGE'],
+    });
+    res.json(withTotal);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message, stack: error.stack });
@@ -164,7 +169,11 @@ export const getEmployeeDailyReport = async (req, res) => {
       result.push(row);
     }
 
-    res.json(result);
+    const withTotal = addTotalsRow(result, {
+      labelKey: 'EMPLOYEE',
+      excludeKeys: ['EMPLOYEE'],
+    });
+    res.json(withTotal);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message, stack: error.stack });
