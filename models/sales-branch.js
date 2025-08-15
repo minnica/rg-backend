@@ -23,7 +23,7 @@ const SalesBranch = db.define(
       field: 'date_sales_branch',
     },
     salesBranchTotal: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.DECIMAL(10, 2),
       field: 'sales_branch_total',
     },
     notes: {
@@ -32,6 +32,7 @@ const SalesBranch = db.define(
   },
   {
     tableName: 'sales_branch',
+    timestamps: false,
   },
 );
 

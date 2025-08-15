@@ -23,7 +23,7 @@ const SalesEmployee = db.define(
       field: 'id_employee',
     },
     salesEmployee: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.DECIMAL(10, 2),
       field: 'sale_employees',
     },
   },

@@ -1,7 +1,7 @@
 import { Op, fn, col, where } from 'sequelize';
 import Branch from '../models/branch.js';
 import SalesBranch from '../models/sales-branch.js';
-import SalesEmployees from '../models/sales-employee.js';
+import SalesEmployee from '../models/sales-employee.js';
 import Employee from '../models/employees.js';
 
 export const getSalesBranchReport = async (req, res) => {
@@ -126,7 +126,7 @@ export const getSalesEmployeeChartReport = async (req, res) => {
 
     const salesWhere = where(fn('DATE_FORMAT', col('date_sales_employees'), '%Y-%m'), month);
 
-    const topSellers = await SalesEmployees.findAll({
+    const topSellers = await SalesEmployee.findAll({
       where: salesWhere,
       include: [
         {

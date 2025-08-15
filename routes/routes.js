@@ -1,6 +1,6 @@
 import express from 'express';
 import { login, logout, verifyToken } from '../controllers/auth.controller.js';
-import { getSalesBranch } from '../controllers/sales.controller.js';
+import { getSalesBranch, createSale } from '../controllers/sales.controller.js';
 import {
   getEmployee,
   getEmployeesSellers,
@@ -44,6 +44,7 @@ router.post('/logout', logout);
 router.get('/verify-token', verifyToken);
 
 router.get('/sales/branch', getSalesBranch);
+router.post('/sales', createSale);
 
 router.get('/employees', getEmployee);
 router.get('/employees/sellers', getEmployeesSellers);

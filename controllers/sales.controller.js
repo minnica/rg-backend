@@ -1,4 +1,5 @@
-import { SalesBranch, Branch } from '../models/index.js';
+import db from '../database/db.js';
+import { SalesBranch, SalesEmployee, SalesPayment, Branch } from '../models/index.js';
 
 export const getSalesBranch = async (req, res) => {
   try {
@@ -25,3 +26,125 @@ export const getSalesBranch = async (req, res) => {
     res.json({ message: error.message });
   }
 };
+
+const toCents = n => Math.round(Number(n ?? 0) * 100);
+const fromCents = c => Number(c ?? 0) / 100;
+const toFixed2 = n => fromCents(n).toFixed(2);
+
+const mergeBy = (rows, key) => {
+  const map = new Map();
+  for (const r of rows) {
+    const k = r[key];
+    const prev = map.get(k);
+    map.set(
+      k,
+      prev
+        ? { ...r, amountCents: (prev.amountCents || 0) + (r.amountCents || 0) }
+        : { ...r, amountCents: r.amountCents || 0 },
+    );
+  }
+  return [...map.values()];
+};
+
+export async function createSale(req, res) {
+  const t = await db.transaction();
+  try {
+    const { branchId, date, notes = '', employees = [], payments = [] } = req.body || {};
+
+    if (!branchId || !date) {
+      await t.rollback();
+      return res.status(400).json({ message: 'branchId y date son requeridos.' });
+    }
+    if (!Array.isArray(employees) || employees.length === 0) {
+      await t.rollback();
+      return res.status(400).json({ message: 'employees no puede estar vacío.' });
+    }
+    if (!Array.isArray(payments) || payments.length === 0) {
+      await t.rollback();
+      return res.status(400).json({ message: 'payments no puede estar vacío.' });
+    }
+
+    const empRows = employees.map(e => ({
+      employeeId: Number(e.employeeId),
+      amountCents: e.amountCents ?? toCents(e.amount),
+    }));
+    const payRows = payments.map(p => ({
+      paymentMethodId: Number(p.paymentMethodId),
+      amountCents: p.amountCents ?? toCents(p.amount),
+    }));
+
+    const mergedEmp = mergeBy(empRows, 'employeeId');
+    const mergedPay = mergeBy(payRows, 'paymentMethodId');
+
+    if (
+      mergedEmp.some(r => !r.employeeId || r.amountCents <= 0) ||
+      mergedPay.some(r => !r.paymentMethodId || r.amountCents <= 0)
+    ) {
+      await t.rollback();
+      return res.status(400).json({ message: 'IDs inválidos o montos <= 0.' });
+    }
+
+    const totalEmpCents = mergedEmp.reduce((s, r) => s + r.amountCents, 0);
+    const totalPayCents = mergedPay.reduce((s, r) => s + r.amountCents, 0);
+    if (totalEmpCents !== totalPayCents) {
+      await t.rollback();
+      return res.status(422).json({
+        message: 'Los totales no cuadran',
+        delta: fromCents(totalEmpCents - totalPayCents), // número con decimales
+        totals: { employees: fromCents(totalEmpCents), payments: fromCents(totalPayCents) },
+      });
+    }
+
+    const sale = await SalesBranch.create(
+      {
+        idBranch: branchId,
+        dateSalesBranch: date,
+        salesBranchTotal: toFixed2(totalEmpCents),
+        notes,
+      },
+      { transaction: t },
+    );
+
+    await SalesEmployee.bulkCreate(
+      mergedEmp.map(r => ({
+        idBranch: branchId,
+        dateSalesEmployee: date,
+        idEmployee: r.employeeId,
+        salesEmployee: toFixed2(r.amountCents),
+      })),
+      { transaction: t },
+    );
+
+    await SalesPayment.bulkCreate(
+      mergedPay.map(r => ({
+        idBranch: branchId,
+        salesPaymentDate: date,
+        idPaymentMethod: r.paymentMethodId,
+        paymentAmount: toFixed2(r.amountCents),
+      })),
+      { transaction: t },
+    );
+
+    await t.commit();
+
+    return res.status(201).json({
+      saleId: sale.idSalesBranch,
+      branchId,
+      date,
+      notes,
+      total: fromCents(totalEmpCents),
+      employees: mergedEmp.map(r => ({
+        employeeId: r.employeeId,
+        amount: fromCents(r.amountCents),
+      })),
+      payments: mergedPay.map(r => ({
+        paymentMethodId: r.paymentMethodId,
+        amount: fromCents(r.amountCents),
+      })),
+    });
+  } catch (err) {
+    await t.rollback();
+    console.error(err);
+    return res.status(500).json({ message: 'Error al crear la venta', error: err.message });
+  }
+}

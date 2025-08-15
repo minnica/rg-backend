@@ -23,7 +23,7 @@ const SalesPayment = db.define(
       field: 'id_payment_method',
     },
     paymentAmount: {
-      type: DataTypes.DECIMAL,
+      type: DataTypes.DECIMAL(10, 2),
       field: 'payment_amount',
     },
   },
