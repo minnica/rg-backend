@@ -148,3 +148,66 @@ export async function createSale(req, res) {
     return res.status(500).json({ message: 'Error al crear la venta', error: err.message });
   }
 }
+
+const isoDateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+export async function deleteSales(req, res) {
+  const branchId = Number(req.query.branchId ?? req.params.branchId);
+  const date = String((req.query.date ?? req.params.date) || '');
+
+  if (!branchId || !isoDateRegex.test(date)) {
+    return res
+      .status(400)
+      .json({ message: 'branchId (number) y date (YYYY-MM-DD) son requeridos.' });
+  }
+
+  const t = await db.transaction();
+  try {
+    const [countBranch, countEmp, countPay] = await Promise.all([
+      SalesBranch.count({ where: { idBranch: branchId, dateSalesBranch: date }, transaction: t }),
+      SalesEmployee.count({
+        where: { idBranch: branchId, dateSalesEmployee: date },
+        transaction: t,
+      }),
+      SalesPayment.count({ where: { idBranch: branchId, salesPaymentDate: date }, transaction: t }),
+    ]);
+
+    if (countBranch + countEmp + countPay === 0) {
+      await t.rollback();
+      return res.status(404).json({ message: 'No hay registros para ese branchId y date.' });
+    }
+
+    const [deletedEmp, deletedPay] = await Promise.all([
+      SalesEmployee.destroy({
+        where: { idBranch: branchId, dateSalesEmployee: date },
+        transaction: t,
+      }),
+      SalesPayment.destroy({
+        where: { idBranch: branchId, salesPaymentDate: date },
+        transaction: t,
+      }),
+    ]);
+
+    const deletedBranch = await SalesBranch.destroy({
+      where: { idBranch: branchId, dateSalesBranch: date },
+      transaction: t,
+    });
+
+    await t.commit();
+
+    return res.status(200).json({
+      message: 'Registros eliminados correctamente.',
+      branchId,
+      date,
+      deleted: {
+        sales_branch: deletedBranch,
+        sales_employees: deletedEmp,
+        sales_payment: deletedPay,
+      },
+    });
+  } catch (err) {
+    await t.rollback();
+    console.error('[DELETE /sales] error:', err);
+    return res.status(500).json({ message: 'Error al eliminar registros.', error: err.message });
+  }
+}

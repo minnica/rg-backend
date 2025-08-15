@@ -19,7 +19,7 @@ const SalesBranch = db.define(
       field: 'branch_name',
     },
     dateSalesBranch: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       field: 'date_sales_branch',
     },
     salesBranchTotal: {

@@ -15,7 +15,7 @@ const SalesPayment = db.define(
       field: 'id_branch',
     },
     salesPaymentDate: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       field: 'sales_payment_date',
     },
     idPaymentMethod: {

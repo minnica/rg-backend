@@ -15,7 +15,7 @@ const SalesEmployee = db.define(
       field: 'id_branch',
     },
     dateSalesEmployee: {
-      type: DataTypes.DATE,
+      type: DataTypes.DATEONLY,
       field: 'date_sales_employees',
     },
     idEmployee: {
