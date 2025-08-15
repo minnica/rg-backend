@@ -15,6 +15,7 @@ export const getSalesBranch = async (req, res) => {
 
     const data = salesBranch.map(r => ({
       idSalesBranch: r.idSalesBranch,
+      idBranch: r.idBranch, 
       branchName: r.Branch?.branchName,
       dateSalesBranch: r.dateSalesBranch,
       salesBranchTotal: r.salesBranchTotal,
