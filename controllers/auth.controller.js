@@ -3,6 +3,15 @@ import Employee from '../models/employees.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
+const isProd = process.env.NODE_ENV === 'production';
+const cookieOptions = {
+  httpOnly: true,
+  secure: isProd,
+  sameSite: isProd ? 'None' : 'Lax',
+  path: '/',
+  maxAge: 60 * 60 * 1000, // 1 hora
+};
+
 export const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -32,12 +41,7 @@ export const login = async (req, res) => {
       { expiresIn: '1h' },
     );
 
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'Strict',
-      maxAge: 3600000,
-    });
+    res.cookie('token', token, cookieOptions);
 
     res.json({ message: 'Login exitoso' });
   } catch (error) {
@@ -47,12 +51,7 @@ export const login = async (req, res) => {
 };
 
 export const logout = (req, res) => {
-  res.clearCookie('token', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'Strict',
-    path: '/',
-  });
+  res.clearCookie('token', cookieOptions);
   res.json({ message: 'Sesión cerrada correctamente' });
 };
 
