@@ -14,6 +14,7 @@ export const getEmployee = async (req, res) => {
         'accountNumber',
         'position',
         'personalTarget',
+        'status',
       ],
     });
 
@@ -38,6 +39,7 @@ export const getEmployeesSellers = async (req, res) => {
         'accountNumber',
         'position',
         'personalTarget',
+        'status', 
       ],
       where: {
         [Op.and]: [
@@ -71,6 +73,7 @@ export const createEmployee = async (req, res) => {
       accountNumber,
       position,
       personalTarget,
+      status,
     } = req.body;
 
     const newEmployee = await Employee.create({
@@ -82,6 +85,7 @@ export const createEmployee = async (req, res) => {
       accountNumber,
       position,
       personalTarget,
+      status,
     });
 
     res.status(201).json(newEmployee);
@@ -102,6 +106,7 @@ export const updateEmployee = async (req, res) => {
       accountNumber,
       position,
       personalTarget,
+      status,
     } = req.body;
 
     const employee = await Employee.findByPk(id);
@@ -118,6 +123,7 @@ export const updateEmployee = async (req, res) => {
     employee.accountNumber = accountNumber ?? employee.accountNumber;
     employee.position = position ?? employee.position;
     employee.personalTarget = personalTarget ?? employee.personalTarget;
+    employee.status = status ?? employee.status;
 
     await employee.save();
 

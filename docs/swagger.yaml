@@ -5,8 +5,10 @@ info:
   description: REST API documentation for Keysar Cosmetics.
 
 servers:
-  - url: "https://keysarcosmetics.fly.dev"
-    description: Production Server
+  - url: "https://keysarcosmetics-test.fly.dev"
+    description: Test Server
+  - url: "https://keysarcosmetics-prod.fly.dev"
+    description: Prod Server
 
 tags:
   - name: Sales

@@ -40,6 +40,9 @@ const Employee = db.define(
       type: DataTypes.DECIMAL(10, 2),
       field: 'personal_target',
     },
+    status: {
+      type: DataTypes.STRING,
+    },
     email: {
       type: DataTypes.STRING,
       unique: true,
